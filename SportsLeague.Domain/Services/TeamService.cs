@@ -10,7 +10,7 @@ public class TeamService : ITeamService
     private readonly ITeamRepository _teamRepository;
     private readonly ILogger<TeamService> _logger;
     //Estas dos son varables de lectura única, y como es algo nuevo tengo que inyectarlas para poder usarlas.
-    //Por lo cuál en el constructor, se pasa ITeamRepository con nomnbre de teamRepository y ILogger con nombre logger
+    //Por lo cuál en el constructor, se pasa ITeamRepository con nombre de teamRepository y ILogger con nombre logger
     public TeamService(ITeamRepository teamRepository, ILogger<TeamService> logger)
     {
         _teamRepository = teamRepository;
