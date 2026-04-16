@@ -13,17 +13,14 @@ namespace SportsLeague.DataAccess.Context
         public DbSet<Team> Teams => Set<Team>();
         public DbSet<Player> Players => Set<Player>();
         public DbSet<Referee> Referees => Set<Referee>(); // NUEVO
-
         public DbSet<Tournament> Tournaments => Set<Tournament>(); // NUEVO
-
         public DbSet<TournamentTeam> TournamentTeams => Set<TournamentTeam>(); // NUEVO
         public DbSet<Sponsor> Sponsors => Set<Sponsor>();
         public DbSet<TournamentSponsor> TournamentSponsors => Set<TournamentSponsor>();
-
+        public DbSet<Match> Matches => Set<Match>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             //Player Configuration
             modelBuilder.Entity<Team>(entity =>
             {
@@ -45,11 +42,8 @@ namespace SportsLeague.DataAccess.Context
                 entity.HasIndex(t => t.Name)
                       .IsUnique();
             });
-
             // ── Player Configuration ──
-
             modelBuilder.Entity<Player>(entity =>
-
             {
                 entity.HasKey(p => p.Id);
                 entity.Property(p => p.FirstName)
@@ -193,7 +187,8 @@ namespace SportsLeague.DataAccess.Context
             {
                 entity.HasKey(ts => ts.Id);
                 entity.Property(ts => ts.ContractAmount)
-                      .IsRequired();
+                .HasPrecision(18, 2)
+                .IsRequired();
                 entity.Property(ts => ts.JoinedAt)
                       .IsRequired();
 
@@ -211,10 +206,46 @@ namespace SportsLeague.DataAccess.Context
 
                 // Índice único compuesto
                 entity.HasIndex(ts => new { ts.TournamentId, ts.SponsorId });
-            });
 
+            });
+            // ── Match Configuration ──
+            modelBuilder.Entity<Match>(entity =>
+            {
+                entity.HasKey(m => m.Id);
+                entity.Property(m => m.MatchDate)
+                .IsRequired();
+                entity.Property(m => m.Venue)
+                .HasMaxLength(150);
+                entity.Property(m => m.Matchday)
+                .IsRequired();
+                entity.Property(m => m.Status)
+                .IsRequired();
+                entity.Property(m => m.CreatedAt)
+                .IsRequired();
+                entity.Property(m => m.UpdatedAt)
+                .IsRequired(false);
+                // Relación con Tournament (Cascade: eliminar torneo elimina partidos)
+                entity.HasOne(m => m.Tournament)
+                .WithMany(t => t.Matches)
+                .HasForeignKey(m => m.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+                // Relación con HomeTeam (Restrict: evita ciclo de cascada)
+                entity.HasOne(m => m.HomeTeam)
+                .WithMany(t => t.HomeMatches)
+                .HasForeignKey(m => m.HomeTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+                // Relación con AwayTeam (Restrict: evita ciclo de cascada)
+                entity.HasOne(m => m.AwayTeam)
+                .WithMany(t => t.AwayMatches)
+                .HasForeignKey(m => m.AwayTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+                // Relación con Referee (Restrict: no eliminar árbitro con partidos)
+                entity.HasOne(m => m.Referee)
+                .WithMany(r => r.Matches)
+                .HasForeignKey(m => m.RefereeId)
+                .OnDelete(DeleteBehavior.Restrict);//Aqui se pone el borrado en restrict porque si elimino un
+                                                   //arbitro de un torneo, el partido debe seguir existiendo
+            });
         }
     }
-
 }
-

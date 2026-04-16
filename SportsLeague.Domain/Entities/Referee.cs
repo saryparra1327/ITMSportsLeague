@@ -11,4 +11,8 @@ public class Referee : AuditBase
 
     public string Nationality { get; set; } = string.Empty;
 
+    //Navigation Property
+
+    public ICollection<Match> Matches { get; set; } = new List<Match>();
+
 }

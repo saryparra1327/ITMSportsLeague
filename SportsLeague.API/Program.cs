@@ -4,7 +4,6 @@ using SportsLeague.DataAccess.Repositories;
 using SportsLeague.Domain.Interfaces.Repositories;
 using SportsLeague.Domain.Interfaces.Services;
 using SportsLeague.Domain.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Entity Framework Core ──
@@ -24,7 +23,6 @@ builder.Services.AddScoped<ITournamentRepository, TournamentRepository>(); // NU
 builder.Services.AddScoped<ITournamentTeamRepository, TournamentTeamRepository>(); // NUEVO
 builder.Services.AddScoped<ISponsorRepository, SponsorRepository>();
 builder.Services.AddScoped<ITournamentSponsorRepository, TournamentSponsorRepository>();
-
 // ── Services ──
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
@@ -44,6 +42,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// ── Repositories (agregar) ──
+builder.Services.AddScoped<IMatchRepository, MatchRepository>();
+// ── Services (agregar) ──
+builder.Services.AddScoped<IMatchService, MatchService>();
+
 var app = builder.Build();
 
 // ── Middleware Pipeline ──
@@ -52,13 +55,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.MapGet("/", () => Results.Redirect("/swagger"));
-
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-
 app.Run();
-
-
