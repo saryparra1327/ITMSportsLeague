@@ -20,7 +20,7 @@ namespace SportsLeague.DataAccess.Context
         public DbSet<Match> Matches => Set<Match>();
         public DbSet<MatchResult> MatchResults => Set<MatchResult>();
         public DbSet<Goal> Goals => Set<Goal>();
-
+        public DbSet<MatchLineup> MatchLinesUp => Set<MatchLineup>();
         public DbSet<Card> Cards => Set<Card>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -313,6 +313,29 @@ namespace SportsLeague.DataAccess.Context
                 entity.HasOne(c => c.Player)
                       .WithMany(p => p.Cards)
                       .HasForeignKey(c => c.PlayerId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // ── MatchLineUp Configuration ── 
+            modelBuilder.Entity<MatchLineup>(entity =>
+            {
+
+                entity.HasKey(mlu => mlu.Id);
+                entity.Property(mlu => mlu.IsStarter).IsRequired();
+                entity.Property(mlu => mlu.Position).IsRequired();
+                entity.Property(mlu => mlu.MatchId).IsRequired();
+                entity.Property(mlu => mlu.PlayerId).IsRequired();
+                entity.Property(c => c.CreatedAt).IsRequired();
+                entity.Property(c => c.UpdatedAt).IsRequired(false);
+
+                entity.HasOne(mlu => mlu.Match)
+                      .WithMany(m => m.MatchLineups)
+                      .HasForeignKey(mlu => mlu.MatchId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(mlu => mlu.Player)
+                      .WithMany(p => p.MatchLinesup)
+                      .HasForeignKey(mlu => mlu.PlayerId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
         }
