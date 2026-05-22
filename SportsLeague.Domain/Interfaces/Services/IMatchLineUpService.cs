@@ -8,10 +8,10 @@ namespace SportsLeague.Domain.Interfaces.Services;
 public interface IMatchLineUpService
 
 {
-    Task addPlayerToLineUp(int PlayerId, int MatchId);
-    Task<MatchLineup?> GetLineUpByIdAsync(int Id);
-    Task<MatchLineup?> GetLineUpByIdAsync(int Id, int TeamId);
-    Task deletePlayerToLineUp(int PlayerId, int MatchId);
+    Task<MatchLineup> AddPlayerToLineUpAsync(int PlayerId, int MatchId, bool IsStarter, string Position);
+    Task<MatchLineup?> GetLineUpByMatchIdAsync(int MatchId);
+    Task<List<MatchLineup>> GetLineUpByMatchAndTeamIdAsync(int matchId, int TeamId);
+    Task DeletePlayerFromLineUpAsync(int lineupId);
 
 }
 

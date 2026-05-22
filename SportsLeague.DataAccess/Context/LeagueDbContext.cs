@@ -12,9 +12,9 @@ namespace SportsLeague.DataAccess.Context
 
         public DbSet<Team> Teams => Set<Team>();
         public DbSet<Player> Players => Set<Player>();
-        public DbSet<Referee> Referees => Set<Referee>(); // NUEVO
-        public DbSet<Tournament> Tournaments => Set<Tournament>(); // NUEVO
-        public DbSet<TournamentTeam> TournamentTeams => Set<TournamentTeam>(); // NUEVO
+        public DbSet<Referee> Referees => Set<Referee>(); 
+        public DbSet<Tournament> Tournaments => Set<Tournament>(); 
+        public DbSet<TournamentTeam> TournamentTeams => Set<TournamentTeam>(); 
         public DbSet<Sponsor> Sponsors => Set<Sponsor>();
         public DbSet<TournamentSponsor> TournamentSponsors => Set<TournamentSponsor>();
         public DbSet<Match> Matches => Set<Match>();
@@ -325,8 +325,10 @@ namespace SportsLeague.DataAccess.Context
                 entity.Property(mlu => mlu.Position).IsRequired();
                 entity.Property(mlu => mlu.MatchId).IsRequired();
                 entity.Property(mlu => mlu.PlayerId).IsRequired();
-                entity.Property(c => c.CreatedAt).IsRequired();
-                entity.Property(c => c.UpdatedAt).IsRequired(false);
+                entity.Property(mlu => mlu.CreatedAt).IsRequired();
+                entity.Property(mlu => mlu.UpdatedAt).IsRequired(false);
+
+                //Relación 1:N con Match y Player
 
                 entity.HasOne(mlu => mlu.Match)
                       .WithMany(m => m.MatchLineups)
@@ -337,6 +339,9 @@ namespace SportsLeague.DataAccess.Context
                       .WithMany(p => p.MatchLinesup)
                       .HasForeignKey(mlu => mlu.PlayerId)
                       .OnDelete(DeleteBehavior.Restrict);
+                //Indice unico compuesto
+                entity.HasIndex(mlu => new { mlu.MatchId, mlu.PlayerId })
+                    .IsUnique();
             });
         }
     }

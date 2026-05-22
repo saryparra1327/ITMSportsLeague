@@ -5,7 +5,7 @@ namespace SportsLeague.Domain.Entities;
 public class MatchLineup: AuditBase
 {
     public bool IsStarter { get; set; }
-    public Position Position { get; set; }
+    public string Position { get; set; } = string.Empty;
 
     //Foreign Key
     public int MatchId { get; set; }
