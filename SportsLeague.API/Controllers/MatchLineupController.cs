@@ -24,27 +24,23 @@ namespace SportsLeague.API.Controllers
             }
 
         [HttpPost]
-        public async Task<ActionResult<MatchLineupResponseDTO>> AddPlayerToLineUpAsync(int MatchId,
-        MatchLineupRequestDTO dto)
+        public async Task<ActionResult<MatchLineupResponseDTO>>AddPlayerToLineUpAsync(int matchId,MatchLineupRequestDTO dto)
         {
             try
             {
+                var lineup = _mapper.Map<MatchLineup>(dto);
 
-                // Llama al service.
-                var created = await _matchLineupService
+                var createdLineup = await _matchLineupService
                     .AddPlayerToLineUpAsync(
-                        dto.PlayerId,
-                        MatchId,
-                        dto.IsStarter,
-                        dto.Position);
+                        lineup.PlayerId,
+                        matchId,
+                        lineup.IsStarter,
+                        lineup.Position);
 
-                // Convierte Entidad → ResponseDTO.
-                var response =
-                    _mapper.Map<MatchLineupResponseDTO>(created);
+                var responseDto = _mapper.Map<MatchLineupResponseDTO>(
+                    createdLineup);
 
-                return Ok(response);
-            
-
+                return StatusCode(201, responseDto);
             }
 
             catch (KeyNotFoundException ex)
@@ -54,6 +50,7 @@ namespace SportsLeague.API.Controllers
                     message = ex.Message
                 });
             }
+
             catch (InvalidOperationException ex)
             {
                 return Conflict(new
@@ -63,15 +60,15 @@ namespace SportsLeague.API.Controllers
             }
         }
         [HttpGet]
-        public async Task<ActionResult<List<MatchLineupResponseDTO>>> GetLineUpByMatchIdAsync(int MatchId)
+        public async Task<ActionResult<List<MatchLineupResponseDTO>>> GetLineUpByMatchIdAsync(int matchId)
         {
             try
             {
                 var lineup = await _matchLineupService
-                    .GetLineUpByMatchIdAsync(MatchId);
+                    .GetLineUpByMatchIdAsync(matchId);
 
                 var response =
-                    _mapper.Map<List<MatchLineupResponseDTO>>(lineup);
+                    _mapper.Map<MatchLineupResponseDTO>(lineup);
 
                 return Ok(response);
             }

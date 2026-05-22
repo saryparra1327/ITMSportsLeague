@@ -40,7 +40,7 @@ public class MatchLineUpService : IMatchLineUpService
         var existingMatch = await _matchRepository.GetByIdAsync(matchId);
         if (existingMatch == null)
         {
-            _logger.LogWarning("Match with ID {MatchId} not found", matchId);
+            _logger.LogWarning("Match with ID {matchId} not found", matchId);
             throw new KeyNotFoundException($"No se encontró el partido con ID {matchId}");
         }
 
@@ -56,7 +56,7 @@ public class MatchLineUpService : IMatchLineUpService
         if (player.TeamId != existingMatch.HomeTeamId && player.TeamId != existingMatch.AwayTeamId)
         {
             _logger.LogWarning("The player does not belong to the HomeTeam or AwayTeam " +
-                "of the match {MatchId}", matchId);
+                "of the match {matchId}", matchId);
             throw new KeyNotFoundException($"El jugador no pertenece al Equipo local o al equipo visitante" +
                 $" del partido {matchId}");
         }
@@ -69,7 +69,7 @@ public class MatchLineUpService : IMatchLineUpService
         if (playerExists)
         {
             _logger.LogWarning(
-                "Player {PlayerId} is already registered in match {MatchId}", playerId, matchId);
+                "Player {PlayerId} is already registered in match {matchId}", playerId, matchId);
             throw new InvalidOperationException(
                 "El jugador ya está registrado en la alineación");
         }
@@ -83,7 +83,7 @@ public class MatchLineUpService : IMatchLineUpService
             if (startersCount >= 11)
             {
                 _logger.LogWarning(
-                    "Team {TeamId} already has 11 starters in match {MatchId}", player.TeamId, matchId);
+                    "Team {TeamId} already has 11 starters in match {matchId}", player.TeamId, matchId);
                 throw new InvalidOperationException(
                     "El equipo ya tiene 11 jugadores titulares en la alineación");
             }
@@ -96,25 +96,27 @@ public class MatchLineUpService : IMatchLineUpService
             IsStarter = isStarter,
             Position = position
         };
+
+
         await _matchLineupRepository.CreateAsync(lineup);
         return lineup;
     }
 
 
-    public async Task<MatchLineup?> GetLineUpByMatchIdAsync(int MatchId)//Trae la alineación por ID de partido
+    public async Task<MatchLineup?> GetLineUpByMatchIdAsync(int matchId)//Trae la alineación por ID de partido
     {
         _logger.LogInformation(
-            "Retrieving lineup with Match ID: {MatchId}",
-            MatchId);
+            "Retrieving lineup with Match ID: {matchId}",
+            matchId);
 
         var lineup = await _matchLineupRepository
-            .GetByIdAsync(MatchId);
+            .GetByIdAsync(matchId);
 
         if (lineup == null)
         {
             _logger.LogWarning(
-                "Lineup with Match ID {MatchId} not found",
-                MatchId);
+                "Lineup with Match ID {matchId} not found",
+                matchId);
         }
 
         return lineup;
@@ -124,7 +126,7 @@ public class MatchLineUpService : IMatchLineUpService
     public async Task<List<MatchLineup>> GetLineUpByMatchAndTeamIdAsync(int matchId, int TeamId)//Trae la alineación de un partido para un equipo específico
     {
         _logger.LogInformation(
-          "Retrieving lineup for Team {TeamId} in Match {MatchId}",
+          "Retrieving lineup for Team {TeamId} in Match {matchId}",
           TeamId,
           matchId);
 
